@@ -1,0 +1,44 @@
+
+name: ZakhrafiKeyboard
+
+options:
+  deploymentTarget:
+    iOS: "15.0"
+
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    TARGETED_DEVICE_FAMILY: "1,2"
+
+targets:
+  ZakhrafiKeyboard:
+    type: application
+    platform: iOS
+    sources:
+      - path: App
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.zakhrafi.keyboard
+        INFOPLIST_KEY_CFBundleDisplayName: Zakhrafi
+        GENERATE_INFOPLIST_FILE: YES
+        CODE_SIGN_STYLE: Automatic
+
+    dependencies:
+      - target: ZakhrafiKeyboardExtension
+        embed: true
+
+  ZakhrafiKeyboardExtension:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: Keyboard
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.zakhrafi.keyboard.extension
+        PRODUCT_NAME: ZakhrafiKeyboardExtension
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_NSExtension_NSExtensionPointIdentifier: com.apple.keyboard-service
+        INFOPLIST_KEY_NSExtension_NSExtensionPrincipalClass: "$(PRODUCT_MODULE_NAME).KeyboardViewController"
+        APPLICATION_EXTENSION_API_ONLY: YES
+        SKIP_INSTALL: YES
+        CODE_SIGN_STYLE: Automatic
