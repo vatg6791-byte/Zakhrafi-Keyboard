@@ -32,6 +32,7 @@ targets:
     sources:
       - path: Keyboard
       - path: symbols.json
+        type: file
         buildPhase: resources
     settings:
       base:
