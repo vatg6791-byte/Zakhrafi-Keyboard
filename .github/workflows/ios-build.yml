@@ -14,8 +14,10 @@ jobs:
         run: brew install xcodegen
       - name: Generate Xcode project
         run: xcodegen generate
-      - name: Show available schemes
-        run: xcodebuild -list -project ZakhrafiKeyboard.xcodeproj
+      - name: Show Xcode project information
+        run: |
+          xcodebuild -list \
+            -project ZakhrafiKeyboard.xcodeproj
       - name: Build app
         run: |
           set -o pipefail
@@ -27,28 +29,54 @@ jobs:
             -derivedDataPath "$PWD/build" \
             CODE_SIGNING_ALLOWED=NO \
             build
-      - name: Find built app
+      - name: Locate built application
         run: |
-          echo "Searching for Zakhrafi.app..."
-          find "$PWD/build" -type d -name "*.app" -print
+          echo "Searching build output..."
+          find "$PWD/build" \
+            -type d \
+            -name "*.app" \
+            -print
+          echo "Searching Xcode build products..."
+          find "$PWD/build/Build/Products" \
+            -maxdepth 2 \
+            -type d \
+            -name "*.app" \
+            -print
       - name: Package app
         run: |
           set -e
-          APP_PATH=$(find "$PWD/build/Build/Products" \
-            -type d \
-            -name "Zakhrafi.app" \
-            -print -quit)
-          if [ -z "$APP_PATH" ]; then
-            echo "ERROR: Zakhrafi.app was not found."
-            echo "Check the Build app and Find built app logs."
+          PRODUCTS="$PWD/build/Build/Products"
+          if [ ! -d "$PRODUCTS" ]; then
+            echo "ERROR: Xcode build products directory is missing."
             exit 1
           fi
-          echo "Found app at: $APP_PATH"
+          APP_PATH=""
+          for APP_NAME in \
+            "Zakhrafi.app" \
+            "ZakhrafiKeyboard.app"
+          do
+            APP_PATH=$(find "$PRODUCTS" \
+              -type d \
+              -name "$APP_NAME" \
+              -print -quit)
+            if [ -n "$APP_PATH" ]; then
+              break
+            fi
+          done
+          if [ -z "$APP_PATH" ]; then
+            echo "ERROR: Main application bundle was not found."
+            echo "All available app bundles:"
+            find "$PWD/build" -type d -name "*.app" -print
+            exit 1
+          fi
+          echo "Application found: $APP_PATH"
           rm -rf Payload
           mkdir -p Payload
-          cp -R "$APP_PATH" Payload/Zakhrafi.app
-          /usr/bin/zip -r ZakhrafiKeyboard-unsigned.ipa Payload
-          echo "IPA package created."
+          cp -R "$APP_PATH" Payload/
+          /usr/bin/zip -r \
+            ZakhrafiKeyboard-unsigned.ipa \
+            Payload
+          echo "IPA packaging completed."
       - name: Upload IPA
         if: success()
         uses: actions/upload-artifact@v4
