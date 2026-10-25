@@ -1,44 +1,58 @@
-
 name: Build Zakhrafi iOS
-
 on:
   workflow_dispatch:
   push:
     branches:
       - main
-
 jobs:
   build:
     runs-on: macos-15
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
       - name: Install XcodeGen
         run: brew install xcodegen
-
       - name: Generate Xcode project
         run: xcodegen generate
-
+      - name: Show available schemes
+        run: xcodebuild -list -project ZakhrafiKeyboard.xcodeproj
       - name: Build app
         run: |
+          set -o pipefail
           xcodebuild \
             -project ZakhrafiKeyboard.xcodeproj \
             -scheme ZakhrafiKeyboard \
             -configuration Release \
             -sdk iphoneos \
-            -derivedDataPath build \
+            -derivedDataPath "$PWD/build" \
             CODE_SIGNING_ALLOWED=NO \
             build
-
+      - name: Find built app
+        run: |
+          echo "Searching for Zakhrafi.app..."
+          find "$PWD/build" -type d -name "*.app" -print
       - name: Package app
         run: |
+          set -e
+          APP_PATH=$(find "$PWD/build/Build/Products" \
+            -type d \
+            -name "Zakhrafi.app" \
+            -print -quit)
+          if [ -z "$APP_PATH" ]; then
+            echo "ERROR: Zakhrafi.app was not found."
+            echo "Check the Build app and Find built app logs."
+            exit 1
+          fi
+          echo "Found app at: $APP_PATH"
+          rm -rf Payload
           mkdir -p Payload
-          cp -R build/Build/Products/Release-iphoneos/Zakhrafi.app Payload/
-          zip -r ZakhrafiKeyboard-unsigned.ipa Payload
-
+          cp -R "$APP_PATH" Payload/Zakhrafi.app
+          /usr/bin/zip -r ZakhrafiKeyboard-unsigned.ipa Payload
+          echo "IPA package created."
       - name: Upload IPA
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: ZakhrafiKeyboard-unsigned-IPA
           path: ZakhrafiKeyboard-unsigned.ipa
+          if-no-files-found: error
