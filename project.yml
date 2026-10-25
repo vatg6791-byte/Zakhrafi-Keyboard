@@ -22,7 +22,6 @@ targets:
         INFOPLIST_KEY_CFBundleDisplayName: Zakhrafi
         GENERATE_INFOPLIST_FILE: YES
         CODE_SIGN_STYLE: Automatic
-
     dependencies:
       - target: ZakhrafiKeyboardExtension
         embed: true
@@ -32,13 +31,18 @@ targets:
     platform: iOS
     sources:
       - path: Keyboard
+      - path: symbols.json
+        buildPhase: resources
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.zakhrafi.keyboard.extension
         PRODUCT_NAME: ZakhrafiKeyboardExtension
         GENERATE_INFOPLIST_FILE: YES
-        INFOPLIST_KEY_NSExtension_NSExtensionPointIdentifier: com.apple.keyboard-service
-        INFOPLIST_KEY_NSExtension_NSExtensionPrincipalClass: "$(PRODUCT_MODULE_NAME).KeyboardViewController"
         APPLICATION_EXTENSION_API_ONLY: YES
         SKIP_INSTALL: YES
         CODE_SIGN_STYLE: Automatic
+    info:
+      properties:
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.keyboard-service
+          NSExtensionPrincipalClass: "$(PRODUCT_MODULE_NAME).KeyboardViewController"
