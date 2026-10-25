@@ -5,8 +5,8 @@ final class MainViewController: UIViewController {
 
     private let titleLabel = UILabel()
     private let descriptionLabel = UILabel()
-    private let statusLabel = UILabel()
-    private let settingsButton = UIButton(type: .system)
+    private let settingsLabel = UILabel()
+    private let enableButton = UIButton(type: .system)
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -16,8 +16,8 @@ final class MainViewController: UIViewController {
     private func setupInterface() {
         view.backgroundColor = UIColor(
             red: 0.055,
-            green: 0.063,
-            blue: 0.10,
+            green: 0.065,
+            blue: 0.09,
             alpha: 1
         )
 
@@ -26,43 +26,49 @@ final class MainViewController: UIViewController {
         titleLabel.textColor = .white
         titleLabel.textAlignment = .center
 
-        descriptionLabel.text = "رموزك وزخارفك في مكان واحد"
+        descriptionLabel.text = """
+        لوحة مفاتيح للرموز والزخارف النصية
+
+        رموز منظمة، بحث سريع، ومفضلة
+        """
         descriptionLabel.font = .systemFont(ofSize: 17)
         descriptionLabel.textColor = .lightGray
         descriptionLabel.textAlignment = .center
+        descriptionLabel.numberOfLines = 0
 
-        statusLabel.text = "لوحة المفاتيح قيد الإعداد"
-        statusLabel.font = .systemFont(ofSize: 15, weight: .medium)
-        statusLabel.textColor = UIColor(
-            red: 0.55,
-            green: 0.78,
-            blue: 1,
-            alpha: 1
-        )
-        statusLabel.textAlignment = .center
-        statusLabel.numberOfLines = 0
+        settingsLabel.text = """
+        لتفعيل لوحة المفاتيح:
+        1. افتح الإعدادات.
+        2. عام ← لوحة المفاتيح.
+        3. لوحات المفاتيح ← إضافة لوحة مفاتيح جديدة.
+        4. اختر Zakhrafi إذا ظهرت بالقائمة.
+        """
+        settingsLabel.font = .systemFont(ofSize: 15)
+        settingsLabel.textColor = .white
+        settingsLabel.numberOfLines = 0
+        settingsLabel.textAlignment = .natural
 
-        settingsButton.setTitle(
+        enableButton.setTitle(
             "طريقة تفعيل لوحة المفاتيح",
             for: .normal
         )
-        settingsButton.titleLabel?.font =
+        enableButton.titleLabel?.font =
             .systemFont(ofSize: 17, weight: .semibold)
-        settingsButton.backgroundColor = UIColor(
-            red: 0.30,
+        enableButton.setTitleColor(.white, for: .normal)
+        enableButton.backgroundColor = UIColor(
+            red: 0.35,
             green: 0.32,
-            blue: 0.90,
+            blue: 0.85,
             alpha: 1
         )
-        settingsButton.setTitleColor(.white, for: .normal)
-        settingsButton.layer.cornerRadius = 14
-        settingsButton.contentEdgeInsets = UIEdgeInsets(
-            top: 16,
-            left: 20,
-            bottom: 16,
-            right: 20
+        enableButton.layer.cornerRadius = 14
+        enableButton.contentEdgeInsets = UIEdgeInsets(
+            top: 15,
+            left: 18,
+            bottom: 15,
+            right: 18
         )
-        settingsButton.addTarget(
+        enableButton.addTarget(
             self,
             action: #selector(showInstructions),
             for: .touchUpInside
@@ -71,9 +77,10 @@ final class MainViewController: UIViewController {
         let stack = UIStackView(arrangedSubviews: [
             titleLabel,
             descriptionLabel,
-            statusLabel,
-            settingsButton
+            enableButton,
+            settingsLabel
         ])
+
         stack.axis = .vertical
         stack.spacing = 24
         stack.alignment = .fill
@@ -97,19 +104,11 @@ final class MainViewController: UIViewController {
     }
 
     @objc private func showInstructions() {
-        let message = """
-        بعد اكتمال بناء التطبيق وتثبيته:
-
-        ١. افتح الإعدادات.
-        ٢. ادخل إلى عام.
-        ٣. افتح لوحة المفاتيح.
-        ٤. اختر لوحات المفاتيح ثم إضافة لوحة مفاتيح جديدة.
-        ٥. اختر Zakhrafi إذا ظهرت في القائمة.
-        """
-
         let alert = UIAlertController(
             title: "تفعيل Zakhrafi",
-            message: message,
+            message: """
+            افتح الإعدادات في الآيفون، ثم عام، ثم لوحة المفاتيح، ثم لوحات المفاتيح، وأضف Zakhrafi إذا كانت متاحة.
+            """,
             preferredStyle: .alert
         )
 
