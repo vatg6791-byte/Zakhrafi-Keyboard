@@ -9,7 +9,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         didFinishLaunchingWithOptions launchOptions:
             [UIApplication.LaunchOptionsKey: Any]? = nil
     ) -> Bool {
-        return true
+        true
     }
 
     func application(
@@ -18,9 +18,32 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             UISceneSession,
         options: UIScene.ConnectionOptions
     ) -> UISceneConfiguration {
-        UISceneConfiguration(
+        let configuration = UISceneConfiguration(
             name: "Default Configuration",
             sessionRole: connectingSceneSession.role
         )
+
+        configuration.delegateClass = SceneDelegate.self
+        return configuration
+    }
+}
+
+final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
+
+    var window: UIWindow?
+
+    func scene(
+        _ scene: UIScene,
+        willConnectTo session: UISceneSession,
+        options connectionOptions: UIScene.ConnectionOptions
+    ) {
+        guard let windowScene = scene as? UIWindowScene else {
+            return
+        }
+
+        let window = UIWindow(windowScene: windowScene)
+        window.rootViewController = MainViewController()
+        window.makeKeyAndVisible()
+        self.window = window
     }
 }
